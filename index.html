@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H.E.R. Glow Up — Personalized Meal Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #FAF6F0; font-family: 'Montserrat', sans-serif; color: #1E1B2C; padding: 2rem 1rem 4rem; min-height: 100vh; }
+  .container { max-width: 680px; margin: 0 auto; }
+  .header { background: #5C2A53; border-radius: 14px; padding: 2.25rem 2rem 2rem; margin-bottom: 1.5rem; }
+  .header-eyebrow { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #CFA6B9; margin-bottom: 0.6rem; }
+  .header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 500; color: #FAF6F0; line-height: 1.3; margin-bottom: 0.5rem; }
+  .header p { font-size: 13px; color: #CFA6B9; line-height: 1.7; }
+  .section-card { background: #fff; border: 1px solid #e8e0ec; border-radius: 14px; padding: 1.5rem 1.75rem; margin-bottom: 1rem; }
+  .section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #9D446A; margin-bottom: 0.35rem; font-weight: 600; }
+  .section-hint { font-size: 12px; color: #888; margin-bottom: 1.25rem; font-style: italic; }
+  .divider { height: 1px; background: #f0e8f0; margin-bottom: 1.25rem; }
+  .field-group { margin-bottom: 1.1rem; }
+  .field-group:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 12px; color: #5a5068; margin-bottom: 6px; font-weight: 500; }
+  .field-hint { font-size: 11px; color: #9D446A; margin-top: 5px; font-style: italic; }
+  input[type="text"], input[type="number"], select, textarea { width: 100%; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: 13px; padding: 10px 14px; border: 1px solid #ddd3e8; background: #fff; color: #1E1B2C; outline: none; transition: border-color 0.15s; appearance: none; -webkit-appearance: none; }
+  input:focus, select:focus, textarea:focus { border-color: #9D446A; }
+  textarea { resize: vertical; min-height: 75px; line-height: 1.6; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 500px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+  .goal-option { border: 1px solid #e0d4e8; border-radius: 10px; padding: 12px 16px; cursor: pointer; font-family: 'Montserrat', sans-serif; color: #1E1B2C; background: #fff; text-align: left; transition: border-color 0.15s, background 0.15s; line-height: 1.4; width: 100%; margin-bottom: 10px; }
+  .goal-option:last-child { margin-bottom: 0; }
+  .goal-option:hover { border-color: #9D446A; background: #fdf5f9; }
+  .goal-option.selected { border: 2px solid #5C2A53; background: #faf0f6; }
+  .goal-title { font-weight: 600; font-size: 13px; display: block; color: #1E1B2C; }
+  .goal-option.selected .goal-title { color: #5C2A53; }
+  .goal-sub { font-size: 11px; color: #888; margin-top: 3px; display: block; }
+  .btn-primary { width: 100%; background: #5C2A53; color: #FAF6F0; border: none; border-radius: 10px; padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; margin-top: 1.25rem; transition: background 0.2s; }
+  .btn-primary:hover { background: #9D446A; }
+  .btn-primary:disabled { background: #b0a0b8; cursor: not-allowed; }
+  .btn-secondary { width: 100%; background: transparent; color: #5C2A53; border: 1.5px solid #5C2A53; border-radius: 10px; padding: 14px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; margin-top: 1rem; transition: background 0.2s; }
+  .btn-secondary:hover { background: #faf0f5; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .loading-state { text-align: center; padding: 2.5rem 1rem; display: none; }
+  .loading-state.visible { display: block; }
+  .spinner { width: 28px; height: 28px; border: 2.5px solid #e8d8f0; border-top-color: #5C2A53; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-state p { font-size: 13px; color: #888; line-height: 1.6; }
+  .loading-state .loading-sub { font-size: 11px; color: #aaa; margin-top: 0.4rem; }
+  .step-badge { display: inline-flex; align-items: center; background: #faf0f5; border: 0.5px solid #CFA6B9; border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 600; color: #5C2A53; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .result-wrap { display: none; margin-top: 1.5rem; }
+  .result-wrap.visible { display: block; }
+  .result-header { background: #5C2A53; border-radius: 14px 14px 0 0; padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .result-header-text { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; color: #FAF6F0; }
+  .copy-btn { background: rgba(255,255,255,0.15); color: #FAF6F0; border: 1px solid rgba(255,255,255,0.3); border-radius: 7px; padding: 6px 14px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
+  .copy-btn:hover { background: rgba(255,255,255,0.25); }
+  .result-area { background: #fff; border: 1px solid #e8e0ec; border-top: none; border-radius: 0 0 14px 14px; padding: 1.75rem; white-space: pre-wrap; font-size: 13px; color: #1E1B2C; line-height: 1.9; max-height: 700px; overflow-y: auto; }
+  .footer-note { text-align: center; font-size: 11px; color: #aaa; margin-top: 2rem; line-height: 1.7; }
+  .footer-note a { color: #9D446A; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <p class="header-eyebrow">H.E.R. Glow Up Coaching</p>
+    <h1>Your Personalized Meal Plan</h1>
+    <p>Fill this out once. Your plan generates in three steps — meal plan, grocery list, then prep guide.</p>
+  </div>
+
+  <div class="section-card">
+    <p class="section-label">About You</p>
+    <div class="divider"></div>
+    <div class="three-col">
+      <div class="field-group"><label>Age</label><input type="number" id="age" placeholder="e.g. 42"></div>
+      <div class="field-group"><label>Height</label><input type="text" id="height" placeholder="e.g. 5'6&quot;"></div>
+      <div class="field-group"><label>Weight (lbs)</label><input type="number" id="weight" placeholder="e.g. 165" oninput="updateProteinHint()"></div>
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Daily Protein Goal (g)</label>
+        <input type="number" id="protein" placeholder="e.g. 130">
+        <p class="field-hint" id="protein-hint">Suggested: 0.8–1g x your body weight in lbs</p>
+      </div>
+      <div class="field-group">
+        <label>Meals per day</label>
+        <select id="meals">
+          <option value="">Select...</option>
+          <option>3 meals, no snacks</option>
+          <option>3 meals + 1 snack</option>
+          <option>3 meals + 2 snacks</option>
+          <option>4 meals</option>
+          <option>5 small meals</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <p class="section-label">Your Goal</p>
+    <div class="divider"></div>
+    <button class="goal-option" onclick="selectGoal(this,'Lose Weight and Fat (15-18% calorie deficit)')" type="button">
+      <span class="goal-title">Lose weight and fat</span><span class="goal-sub">15-18% calorie deficit to start</span>
+    </button>
+    <button class="goal-option" onclick="selectGoal(this,'Body Recomposition — lose fat while building muscle (5-10% deficit)')" type="button">
+      <span class="goal-title">Body recomposition</span><span class="goal-sub">Lose fat, build muscle — weight matters less here. 5-10% deficit.</span>
+    </button>
+    <button class="goal-option" onclick="selectGoal(this,'Hormone Regulation and Overall Well-being (maintenance calories)')" type="button">
+      <span class="goal-title">Hormone regulation and well-being</span><span class="goal-sub">Maintenance calories. Feeling good is the goal.</span>
+    </button>
+  </div>
+
+  <div class="section-card">
+    <p class="section-label">Food Preferences</p>
+    <p class="section-hint">The more specific you are, the better your plan. Think real foods, not categories.</p>
+    <div class="divider"></div>
+    <div class="field-group"><label>Foods you love or want included</label><textarea id="foods-like" placeholder="e.g. chicken, ground turkey, Greek yogurt, rice, eggs, berries, tacos..."></textarea></div>
+    <div class="field-group"><label>Foods you dislike or avoid</label><textarea id="foods-avoid" placeholder="e.g. fish, tofu, Brussels sprouts, anything with mayo..."></textarea></div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Dietary style</label>
+        <select id="diet-style">
+          <option value="">Select...</option>
+          <option>Balanced / no restrictions</option>
+          <option>Mediterranean-inspired</option>
+          <option>Low-carb</option>
+          <option>Vegetarian</option>
+          <option>Gluten-free</option>
+          <option>Dairy-free</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Food measuring preference</label>
+        <select id="measuring">
+          <option value="">Select...</option>
+          <option value="Hand portions (palm, fist, etc.)">Hand portions</option>
+          <option value="Grams and ounces">Grams and ounces</option>
+          <option value="Cups and tablespoons">Cups and tablespoons</option>
+          <option value="Mix of cups and grams">Mix of cups and grams</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group"><label>Health conditions, sensitivities, or medications</label><textarea id="health" placeholder="e.g. reflux, thyroid issues, on GLP-1, iron deficiency — or none"></textarea></div>
+  </div>
+
+  <div class="section-card">
+    <p class="section-label">Your Activity</p>
+    <div class="divider"></div>
+    <div class="two-col">
+      <div class="field-group"><label>Hours sitting per day</label><input type="number" id="sitting" placeholder="e.g. 6"></div>
+      <div class="field-group"><label>Minutes of exercise per day</label><input type="number" id="exercise-mins" placeholder="e.g. 45"></div>
+    </div>
+    <div class="field-group"><label>Type of exercise</label><input type="text" id="exercise-type" placeholder="e.g. strength training 4x/week + walking daily"></div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Effort level (1 = easy, 5 = all out)</label>
+        <select id="effort">
+          <option value="">Select...</option>
+          <option>1 — light effort</option>
+          <option>2 — moderate-light</option>
+          <option>3 — moderate</option>
+          <option>4 — hard</option>
+          <option>5 — all out</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Active outside of workouts?</label>
+        <select id="active-outside">
+          <option value="">Select...</option>
+          <option value="Yes — I move a lot throughout the day">Yes — I move a lot</option>
+          <option value="Not really — mostly sedentary outside workouts">Not really — mostly sedentary</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="runStep1()" id="btn-step1">Generate My 7-Day Meal Plan</button>
+
+  <div class="loading-state" id="loading1"><div class="spinner"></div><p>Building your 7-day meal plan...</p><p class="loading-sub">This takes about 20-30 seconds. Hang tight.</p></div>
+
+  <div class="result-wrap" id="result-wrap1">
+    <div class="step-badge">Step 1 complete</div>
+    <div class="result-header"><span class="result-header-text">Your 7-Day Meal Plan</span><button class="copy-btn" onclick="copyResult('result1')">Copy</button></div>
+    <div class="result-area" id="result1"></div>
+    <button class="btn-secondary" onclick="runStep2()" id="btn-step2">Generate My Grocery List</button>
+  </div>
+
+  <div class="loading-state" id="loading2"><div class="spinner"></div><p>Building your grocery list...</p><p class="loading-sub">Almost there...</p></div>
+
+  <div class="result-wrap" id="result-wrap2">
+    <div class="step-badge">Step 2 complete</div>
+    <div class="result-header"><span class="result-header-text">Weekly Grocery List</span><button class="copy-btn" onclick="copyResult('result2')">Copy</button></div>
+    <div class="result-area" id="result2"></div>
+    <button class="btn-secondary" onclick="runStep3()" id="btn-step3">Generate Prep Guide + Snack Ideas</button>
+  </div>
+
+  <div class="loading-state" id="loading3"><div class="spinner"></div><p>Building your prep guide...</p><p class="loading-sub">Last one...</p></div>
+
+  <div class="result-wrap" id="result-wrap3">
+    <div class="step-badge">Step 3 complete</div>
+    <div class="result-header"><span class="result-header-text">Prep Guide + Snack Ideas</span><button class="copy-btn" onclick="copyResult('result3')">Copy</button></div>
+    <div class="result-area" id="result3"></div>
+  </div>
+
+  <p class="footer-note">Created by <a href="https://www.instagram.com/baddieBodybyKayla" target="_blank">@BaddieBodybyKayla</a> &nbsp;|&nbsp; H.E.R. Glow Up Coaching</p>
+
+</div>
+
+<script>
+let selectedGoal = '';
+let clientInfo = '';
+
+function updateProteinHint() {
+  const w = parseFloat(document.getElementById('weight').value);
+  const hint = document.getElementById('protein-hint');
+  hint.textContent = w > 0
+    ? 'Suggested for your weight: ' + Math.round(w * 0.8) + '\u2013' + Math.round(w) + 'g per day'
+    : 'Suggested: 0.8\u20131g x your body weight in lbs';
+}
+
+function selectGoal(btn, goal) {
+  document.querySelectorAll('.goal-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedGoal = goal;
+}
+
+function copyResult(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('[onclick*="' + id + '"]');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); }
+  });
+}
+
+function gv(id) { return document.getElementById(id).value; }
+
+function buildClientInfo() {
+  return 'Female client:\n- Age: ' + gv('age') + '\n- Height: ' + gv('height') + '\n- Weight: ' + gv('weight') + ' lbs\n- Protein goal: ' + (gv('protein') || 'estimate from stats') + 'g\n- Goal: ' + selectedGoal + '\n- Meals/day: ' + gv('meals') + '\n- Foods she likes: ' + (gv('foods-like') || 'not specified') + '\n- Foods to avoid: ' + (gv('foods-avoid') || 'none') + '\n- Diet style: ' + (gv('diet-style') || 'balanced') + '\n- Measuring: ' + (gv('measuring') || 'cups and tablespoons') + '\n- Health notes: ' + (gv('health') || 'none') + '\n- Sitting hrs/day: ' + (gv('sitting') || 'not specified') + '\n- Exercise: ' + (gv('exercise-mins') || 'not specified') + ' min/day, ' + (gv('exercise-type') || 'not specified') + '\n- Effort: ' + (gv('effort') || 'not specified') + '\n- Active outside workouts: ' + (gv('active-outside') || 'not specified');
+}
+
+async function callClaude(prompt, maxTokens) {
+  const resp = await fetch('/.netlify/functions/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens })
+  });
+  const data = await resp.json();
+  if (data.content && data.content[0]) return data.content[0].text;
+  throw new Error(JSON.stringify(data));
+}
+
+async function runStep1() {
+  if (!gv('age') || !gv('height') || !gv('weight') || !selectedGoal || !gv('meals')) {
+    alert('Please fill out age, height, weight, goal, and meals per day at minimum.');
+    return;
+  }
+  clientInfo = buildClientInfo();
+  document.getElementById('btn-step1').disabled = true;
+  document.getElementById('loading1').classList.add('visible');
+  try {
+    const prompt = 'You are a practical nutrition coach. Create a 7-day meal plan for this client.\n\n' + clientInfo + '\n\nFor each of the 7 days provide:\n- Every meal/snack with exact ingredient amounts (specify exact food and amount — never vague terms)\n- Simple prep instructions and time\n- Nutrition per meal: calories, protein (g), fiber (g)\n- Daily totals\n\nStart with: estimated maintenance calories, target daily calories, and daily protein target.\n\nUse her measuring preference. Keep recipes to 10 ingredients or fewer, prep under 20 minutes. Reuse ingredients across the week. Keep weekends lower-prep. Be concise.\n\nPROTEIN REQUIREMENT — NON-NEGOTIABLE: Every single day must meet or exceed the client\'s stated daily protein goal. Distribute protein evenly across all meals and snacks. Before finalizing each day, verify the daily protein total meets the goal.\n\nFIBER REQUIREMENT — NON-NEGOTIABLE: Every single day must hit a minimum of 25g fiber. Distribute fiber throughout the day. Use a variety of sources: vegetables, fruits, legumes, whole grains, nuts, seeds. Before finalizing each day, verify the daily fiber total reaches 25g minimum.';
+    const result = await callClaude(prompt, 8000);
+    document.getElementById('result1').textContent = result;
+    document.getElementById('loading1').classList.remove('visible');
+    document.getElementById('result-wrap1').classList.add('visible');
+    document.getElementById('result-wrap1').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    document.getElementById('loading1').classList.remove('visible');
+    document.getElementById('btn-step1').disabled = false;
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+async function runStep2() {
+  document.getElementById('btn-step2').disabled = true;
+  document.getElementById('loading2').classList.add('visible');
+  try {
+    const mealPlan = document.getElementById('result1').textContent.slice(0, 2000);
+    const prompt = 'Based on this 7-day meal plan, create a complete weekly grocery list.\n\nClient: ' + clientInfo + '\n\nMeal plan:\n' + mealPlan + '\n\nOrganize by: Protein / Produce / Dairy & Refrigerated / Pantry / Condiments & Sauces / Frozen. Include total weekly amounts. Consolidate duplicates. Make it easy to shop from.';
+    const result = await callClaude(prompt, 3000);
+    document.getElementById('result2').textContent = result;
+    document.getElementById('loading2').classList.remove('visible');
+    document.getElementById('result-wrap2').classList.add('visible');
+    document.getElementById('result-wrap2').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    document.getElementById('loading2').classList.remove('visible');
+    document.getElementById('btn-step2').disabled = false;
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+async function runStep3() {
+  document.getElementById('btn-step3').disabled = true;
+  document.getElementById('loading3').classList.add('visible');
+  try {
+    const prompt = 'Create a prep guide and snack ideas for this client.\n\nClient: ' + clientInfo + '\n\n1. BATCH PREP PLAN (30-60 min Sunday prep)\n- Proteins to prepare ahead\n- Vegetables to wash or chop\n- Grains or starches to cook ahead\n- Grab-and-go snack prep\n- Time-saving tips\n\n2. PROTEIN-FORWARD SNACK IDEAS\n8-10 options with serving size, protein amount, and quick prep idea.\n\n3. MICRONUTRIENT GAPS\nFlag 2-3 likely gaps and give food-first solutions.\n\nKeep everything practical and specific to her preferences.';
+    const result = await callClaude(prompt, 3000);
+    document.getElementById('result3').textContent = result;
+    document.getElementById('loading3').classList.remove('visible');
+    document.getElementById('result-wrap3').classList.add('visible');
+    document.getElementById('result-wrap3').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    document.getElementById('loading3').classList.remove('visible');
+    document.getElementById('btn-step3').disabled = false;
+    alert('Something went wrong. Please try again.');
+  }
+}
+</script>
+</body>
+</html>
